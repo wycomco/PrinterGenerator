@@ -1,5 +1,5 @@
-# Update: This project is now archived and is not being developed further.
-It has been reported that this no longer works as of Catalina. If someone wishes to take over / create a new fork, please do, by all means.
+# Update: The official project is now archived and is not being developed any further. This fork received an update for macOS 10.14 & 10.15 and uses the munki-included python 3 interpreter. It might show an error on systems not using english or german on the commandline but still successfully install all printers.
+# Please be aware that this copy might not be under constant development.
 
 PrinterGenerator
 ================
