@@ -13,7 +13,7 @@
 	<key>display_name</key>
 	<string>DISPLAY_NAME</string>
 	<key>installcheck_script</key>
-	<string>#!/usr/bin/python
+	<string>#!/usr/local/munki/munki-python
 import subprocess
 import sys
 import shlex
@@ -21,7 +21,7 @@ import shlex
 printerOptions = { OPTIONS }
 
 cmd = ['/usr/bin/lpoptions', '-p', 'PRINTERNAME', '-l']
-proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 (lpoptLongOut, lpoptErr) = proc.communicate()
 
 # lpoptions -p printername -l will still exit 0 even if printername does not exist
@@ -51,6 +51,11 @@ for option in lpoptLongOut.splitlines():
                 print("Found mismatch: %s is '%s', should be '%s'" % (myOption, printerOptions[myOption], actualOptionValue))
                 sys.exit(0)
 
+try:
+    lpoptOut = lpoptOut.decode("utf-8")
+except UnicodeDecodeError:
+    sys.exit(0)
+
 optionDict = {}
 for builtOption in shlex.split(lpoptOut):
     try:
@@ -66,7 +71,8 @@ for keyName in comparisonDict.keys():
         print("Settings mismatch: %s is '%s', should be '%s'" % (keyName, optionDict[keyName], comparisonDict[keyName]))
         sys.exit(0)
 
-sys.exit(1)</string>
+sys.exit(1)
+</string>
 	<key>installer_type</key>
 	<string>nopkg</string>
 	<key>minimum_os_version</key>
@@ -74,7 +80,7 @@ sys.exit(1)</string>
 	<key>name</key>
 	<string>AddPrinter_DISPLAYNAME</string>
 	<key>postinstall_script</key>
-	<string>#!/usr/bin/python
+	<string>#!/usr/local/munki/munki-python
 import subprocess
 import sys
 
@@ -82,7 +88,7 @@ import sys
 printerOptions = { OPTIONS }
 
 cmd = [ '/usr/sbin/lpadmin', '-x', 'PRINTERNAME' ]
-proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 (lpadminxOut, lpadminxErr) = proc.communicate()
 
 # Install the printer
@@ -100,19 +106,19 @@ for option in printerOptions.keys():
     cmd.append("-o")
     cmd.append(str(option) + "=" +  str(printerOptions[option]))
 
-proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
 (lpadminOut, lpadminErr) = proc.communicate()
 
 if lpadminErr:
-        if "Printer drivers are deprecated" in lpadminErr:
+        if "Printer drivers are deprecated" in lpadminErr or "Reine Wartelisten wurden verworfen" in lpadminErr:
                 # work around lpadmin deprecation message
-                print "Install successful - caught deprecation message; preventing exit 1"
-                pass
+                print("Install successful - caught deprecation message; preventing exit 1")
         else:
-                print "Error: %s" % lpadminErr
+                print("Error: %s" % lpadminErr)
                 sys.exit(1)
 print("Results: %s" % lpadminOut)
-sys.exit(0)</string>
+sys.exit(0)
+</string>
 	<key>unattended_install</key>
 	<true/>
 	<key>uninstall_method</key>
