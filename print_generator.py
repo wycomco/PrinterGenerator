@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/munki/munki-python
 from __future__ import absolute_import, print_function
 
 import argparse
@@ -48,67 +48,67 @@ f.close()
 if args.csv:
     # A CSV was found, use that for all data.
     with open(args.csv, mode='r') as infile:
-        reader = csv.reader(infile)
-        next(reader, None) # skip the header row
+        reader = csv.DictReader(infile, delimiter=';')
+
         for row in reader:
             newPlist = dict(templatePlist)
-            # each row contains 10 elements:
-            # Printer name, location, display name, address, driver, description, options, version, requires, icon
-            # options in the form of "Option=Value Option2=Value Option3=Value"
-            # requires in the form of "package1 package2" Note: the space seperator
+            # each row contains up to 12 elements:
+            # Printer name, Location, Display Name, Address, Driver, Description, Options, Version, Requires, Icon, Catalog, Directory
+            # Options in the form of "Option=Value Option2=Value Option3=Value"
+            # Requires in the form of "package1 package2" Note: the space seperator
             theOptionString = ''
-            if row[6] != "":
-                theOptionString = getOptionsString(row[6].split(" "))
+            if row['Options'] != "":
+                theOptionString = getOptionsString(row['Options'].split(" "))
             # First, change the plist keys in the pkginfo itself
-            newPlist['display_name'] = row[2]
-            newPlist['description'] = row[5]
-            newPlist['name'] = "AddPrinter_" + str(row[0]) # set to printer name
+            newPlist['display_name'] = row['Display Name']
+            newPlist['description'] = row['Description']
+            newPlist['name'] = "AddPrinter_" + str(row['Printer Name']) # set to printer name
             # Check for an icon
-            if row[9] != "":
-                newPlist['icon_name'] = row[9]
+            if row['Icon'] != "":
+                newPlist['icon_name'] = row['Icon']
             # Check for a version number
-            if row[7] != "":
+            if row['Version'] != "":
                 # Assume the user specified a version number
-                version = row[7]
+                version = row['Version']
             else:
                 # Use the default version of 1.0
                 version = "1.0"
             newPlist['version'] = version
             # Check for a protocol listed in the address
-            if '://' in row[3]:
+            if '://' in row['Address']:
                 # Assume the user passed in a full address and protocol
-                address = row[3]
+                address = row['Address']
             else:
                 # Assume the user wants to use the default, lpd://
-                address = 'lpd://' + row[3]
+                address = 'lpd://' + row['Address']
             # Append the driver path to the driver file specified in the csv
-            driver = '/Library/Printers/PPDs/Contents/Resources/%s' % row[4]
-            base_driver = row[4]
-            if row[4].endswith('.gz'):
-                base_driver = row[4].replace('.gz', '')
+            driver = '/Library/Printers/PPDs/Contents/Resources/%s' % row['Driver']
+            base_driver = row['Driver']
+            if row['Driver'].endswith('.gz'):
+                base_driver = row['Driver'].replace('.gz', '')
             if base_driver.endswith('.ppd'):
                 base_driver = base_driver.replace('.ppd', '')
             # Now change the variables in the installcheck_script
-            newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("PRINTERNAME", row[0])
+            newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("PRINTERNAME", row['Printer Name'])
             newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("OPTIONS", theOptionString)
-            newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("LOCATION", row[1].replace('"', ''))
-            newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("DISPLAY_NAME", row[2].replace('"', ''))
+            newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("LOCATION", row['Location'].replace('"', ''))
+            newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("DISPLAY_NAME", row['Display Name'].replace('"', ''))
             newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("ADDRESS", address)
             newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("DRIVER", base_driver)
             # Now change the variables in the postinstall_script
-            newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("PRINTERNAME", row[0])
-            newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("LOCATION", row[1].replace('"', ''))
-            newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("DISPLAY_NAME", row[2].replace('"', ''))
+            newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("PRINTERNAME", row['Printer Name'])
+            newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("LOCATION", row['Location'].replace('"', ''))
+            newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("DISPLAY_NAME", row['Display Name'].replace('"', ''))
             newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("ADDRESS", address)
             newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("DRIVER", driver)
             newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("OPTIONS", theOptionString)
             # Now change the one variable in the uninstall_script
-            newPlist['uninstall_script'] = newPlist['uninstall_script'].replace("PRINTERNAME", row[0])
+            newPlist['uninstall_script'] = newPlist['uninstall_script'].replace("PRINTERNAME", row['Printer Name'])
             # Add required packages if passed in the csv
-            if row[8] != "":
-                newPlist['requires'] = row[8].split(' ')
+            if row['Requires'] != "":
+                newPlist['requires'] = row['Requires'].split(' ')
             # Write out the file
-            newFileName = "AddPrinter-" + row[0] + "-" + version + ".pkginfo"
+            newFileName = "AddPrinter-" + row['Printer Name'] + "-" + version + ".pkginfo"
             f = open(newFileName, 'wb')
             dump_plist(newPlist, f)
             f.close()
@@ -182,7 +182,7 @@ else:
         address = 'lpd://' + args.address
 
     newPlist = dict(templatePlist)
-   # root pkginfo variable replacement
+    # root pkginfo variable replacement
     newPlist['description'] = description
     newPlist['display_name'] = displayName
     newPlist['name'] = "AddPrinter_" + displayName.replace(" ", "")
