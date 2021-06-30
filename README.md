@@ -1,12 +1,27 @@
-# Update: The official project is now archived and is not being developed any further. This fork received an update for macOS 10.14 & 10.15 and uses the munki-included python 3 interpreter. It might show an error on systems not using english or german on the commandline but still successfully install all printers.
-# Please be aware that this copy might not be under constant development.
-
-PrinterGenerator
-================
+# PrinterGenerator
 
 This script will generate a ["nopkg"](https://groups.google.com/d/msg/munki-dev/hmfPZ7sgW6k/q6vIkPIPepoJ) style pkginfo file for [Munki](https://github.com/munki/munki/wiki) to install a printer.
 
 See [Managing Printers with Munki](https://github.com/munki/munki/wiki/Managing-Printers-With-Munki) for more details.
+
+This is a fork of [nmcspadden/PrinterGenerator](https://github.com/nmcspadden/PrinterGenerator), initiated by [jutonium](https://github.com/jutonium).
+
+## Enhancements
+
+This updated version implements some cool new things:
+
+* Support for macOS 10.14, 10.15 and 11
+* Usage of the Munki-included Python3
+* Enables usage of Microsoft Excel to edit the CSV file – **this required switching the separator from comma to semicolon**, you may need to update your files accordingly
+* The order of the csv columns do not have to be preserved, but **keep the names of the 1st row**.
+* Sanity checks for the csv fields
+* Option to define a path to Munki repo and an optional subdirectory
+* Option to define a separate name for the Munki pkginfo item
+* Besides switching to semicolons as csv separator: **This script should preserve backward compatibility!**
+
+## Caveats
+
+It might show an error on systems not using English or German on the command line but still successfully install all printers.
 
 ## Usage
 
@@ -27,27 +42,28 @@ The uninstall_script will delete the printer queue named PRINTERNAME if uninstal
 
 ### Using a CSV file:
 
-A template CSV file is provided to make it easy to generate multiple pkginfos in one run.  Pass the path to the csv file with `--csv`:
+A template CSV file is provided to make it easy to generate multiple pkginfos in one run. Pass the path to the csv file with `--csv`:
 
 ```
 ./print_generator.py --csv /path/to/printers.csv
 ```
-*Note: if a CSV file is provided, all other command line arguments are ignored.*
+*Note: if a CSV file is provided, all other command line arguments – besides the optional `--repo` – are ignored.*
 
 The CSV file's columns should be pretty self-explanatory:
 
 * Printer name: Name of the print queue
-* Location: The "location" of the printer
-* Display name: The visual name that shows up in the Printers & Scanners pane of the System Preferences, and in the print dialogue boxes.  Also used in the Munki pkginfo.
-* Address: The IP or DNS address of the printer. The template uses the form: `lpr://ADDRESS`.  Change to another protocol in the template if necessary.
-* Driver: Name of the driver file in /Library/Printers/PPDs/Contents/Resources/.
+* Location: The "location" of the printer as displayed in System Preferences
+* Display name: The visual name that shows up in the Printers & Scanners pane of the System Preferences, and in the print dialogue boxes. Also used in the Munki pkginfo.
+* Address: The IP or DNS address of the printer. If no protocol is specified, we expect `lpd://`
+* Driver: Name of the driver file in /Library/Printers/PPDs/Contents/Resources/ or an absolute path to a ppd file.
 * Description: Used only in the Munki pkginfo.
-* Options: Any printer options that should be specified. These **must** be space-delimited key=value pairs, such as "HPOptionDuplexer=True OutputMode=normal".  **Do not use commas to separate the options, because this is a comma-separated values file.**
-* Version: Used only in the Munki pkginfo.
+* Options: Any printer options that should be specified. These **must** be space-delimited key=value pairs, such as "HPOptionDuplexer=True OutputMode=normal".  **Do not use commas to separate the options.**
+* Version: Used only in the Munki pkginfo, defaults to `1.0`
 * Requires: Required packages for Munki pkginfo. These **must** be space-delimited, such as "CanonDriver1 CanonDriver2".
 * Icon: Optionally specify an existing icon in the Munki repo to display for the printer in Managed Software Center.
-
-The CSV file is not sanity-checked for invalid entries or blank fields, so double check your file and test your pkginfos thoroughly.
+* Catalogs: Space separated list of Munki catalogs in which this pkginfo should be listed
+* Subdirectory: Subdirectory inside Munki's pkgsinfo directory, only used if `--repo` is defined.
+* Munki Name: A specific name for this pkgsinfo item. This defaults to `AddPrinter_Printer Name`
 
 ### Command-line options:
 
@@ -55,41 +71,33 @@ A full description of usage is available with:
 
 ```
 ./print_generator.py -h
-usage: print_generator.py [-h] [--printername PRINTERNAME] [--driver DRIVER]
-                          [--address ADDRESS] [--location LOCATION]
-                          [--displayname DISPLAYNAME] [--desc DESC]
-                          [--requires REQUIRES]
-                          [--options [OPTIONS [OPTIONS ...]]]
-                          [--version VERSION] [--icon ICON] [--csv CSV]
+usage: print_generator.py [-h] [--printername PRINTERNAME] [--driver DRIVER] [--address ADDRESS] [--location LOCATION] [--displayname DISPLAYNAME] [--desc DESC] [--requires REQUIRES] [--options [OPTIONS ...]] [--version VERSION] [--icon ICON] [--catalogs CATALOGS] [--munkiname MUNKINAME] [--repo REPO]
+                          [--subdirectory SUBDIRECTORY] [--csv CSV]
 
 Generate a Munki nopkg-style pkginfo for printer installation.
 
 optional arguments:
   -h, --help            show this help message and exit
   --printername PRINTERNAME
-                        Name of printer queue. May not contain spaces, tabs, #
-                        or /. Required.
-  --driver DRIVER       Name of driver file in
-                        /Library/Printers/PPDs/Contents/Resources/. Can be
-                        relative or full path. Required.
-  --address ADDRESS     IP or DNS address of printer. If no protocol is
-                        specified, defaults to lpd://. Required.
-  --location LOCATION   Location name for printer. Optional. Defaults to
-                        printername.
+                        Name of printer queue. May not contain spaces, tabs, # or /. Required.
+  --driver DRIVER       Name of driver file in /Library/Printers/PPDs/Contents/Resources/. Can be relative or full path. Required.
+  --address ADDRESS     IP or DNS address of printer. If no protocol is specified, defaults to lpd://. Required.
+  --location LOCATION   Location name for printer. Optional. Defaults to printername.
   --displayname DISPLAYNAME
-                        Display name for printer (and Munki pkginfo).
-                        Optional. Defaults to printername.
+                        Display name for printer (and Munki pkginfo). Optional. Defaults to printername.
   --desc DESC           Description for Munki pkginfo only. Optional.
-  --requires REQUIRES   Required packages in form of space-delimited
-                        'CanonDriver1 CanonDriver2'. Optional.
-  --options [OPTIONS [OPTIONS ...]]
-                        Printer options in form of space-delimited
-                        'Option1=Key Option2=Key Option3=Key', etc. Optional.
-  --version VERSION     Version number of Munki pkginfo. Optional. Defaults to
-                        1.0.
-  --icon ICON           Name of exisiting icon in Munki repo. Optional.
-  --csv CSV             Path to CSV file containing printer info. If CSV is
-                        provided, all other options are ignored.
+  --requires REQUIRES   Required packages in form of space-delimited 'CanonDriver1 CanonDriver2'. Optional.
+  --options [OPTIONS ...]
+                        Printer options in form of space-delimited 'Option1=Key Option2=Key Option3=Key', etc. Optional.
+  --version VERSION     Version number of Munki pkginfo. Optional. Defaults to 1.0.
+  --icon ICON           Specifies an existing icon in the Munki repo to display for the printer in Managed Software Center. Optional.
+  --catalogs CATALOGS   Space delimited list of Munki catalogs. Defaults to 'testing'. Optional.
+  --munkiname MUNKINAME
+                        Name of Munki item. Defaults to printername. Optional.
+  --repo REPO           Path to Munki repo. If specified, we will try to write directly to its containing pkgsinfo directory. If not defined, we will write to current working directory. Optional.
+  --subdirectory SUBDIRECTORY
+                        Subdirectory of Munki's pkgsinfo directory. Optional.
+  --csv CSV             Path to CSV file containing printer info. If CSV is provided, all other options besides '--repo' are ignored.
 ```
 
 As in the above CSV section, the arguments are all the same:
@@ -104,8 +112,12 @@ As in the above CSV section, the arguments are all the same:
 * `--options`: Any number of printer options that should be specified. These should be space-delimited key=value pairs, such as "HPOptionDuplexer=True OutputMode=normal".
 * `--version`: The version number of the Munki pkginfo. Defaults to "1.0".
 * `--icon`: Used only in the Munki pkginfo. If not provided, will default to an empty string ("").
+* `--catalogs`: Space delimited list of Munki catalogs. Defaults to 'testing'. Optional.
+* `--munkiname`: Name of Munki item. Defaults to printername. Optional.
+* `--repo`: Path to Munki repo. If specified, we will try to write directly to its containing pkgsinfo directory. If not defined, we will write to current working directory. Optional.
+* `--subdirectory`: Subdirectory of Munki's pkgsinfo directory. Optional.
 
-### Figuring out options:
+### Figuring out options
 
 Printer options can be determined by using `lpoptions` on an existing printer queue:  
 `/usr/bin/lpoptions -p YourPrinterQueueName -l`  
@@ -128,150 +140,3 @@ Despite `lpoptions` using a "Name/Nice Name: Value *Value Value" format, the opt
 This is the format you must use when passing options to `--options`, or specifying them in the CSV file.  
 
 *Note that `/usr/bin/lpoptions -l` without specifying a printer will list options for the default printer.*
-
-
-### Example:
-```
-./print_generator.py --printername="MyPrinterQueue" \
-		--driver="HP officejet 5500 series.ppd.gz" \
-		--address="10.0.0.1" \
-		--location="Tech Office" \
-		--displayname="My Printer Queue" \
-		--desc="Black and white printer in Tech Office" \
-		--requires="CanonPrinterDriver" \
-		--options="HPOptionDuplexer=True OutputMode=normal" \
-		--icon="HP LaserJet 4250.icns" \
-		--version=1.5
-```
-
-The output pkginfo file generated:
-
-```
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>autoremove</key>
-	<false/>
-	<key>catalogs</key>
-	<array>
-		<string>testing</string>
-	</array>
-	<key>description</key>
-	<string>Black and white printer in Tech Office</string>
-	<key>display_name</key>
-	<string>My Printer Queue</string>
-	<key>icon_name</key>
-	<string>HP LaserJet 4250.icns</string>
-	<key>installcheck_script</key>
-	<string>#!/usr/bin/python
-import subprocess
-import sys
-import shlex
-
-printerOptions = { "HPOptionDuplexer":"True", "OutputMode":"normal" }
-
-cmd = ['/usr/bin/lpoptions', '-p', 'MyPrinterQueue', '-l']
-proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-(lpoptLongOut, lpoptErr) = proc.communicate()
-
-# lpoptions -p printername -l will still exit 0 even if printername does not exist
-# but it will print to stderr
-if lpoptErr:
-    print lpoptErr
-    sys.exit(0)
-
-cmd = ['/usr/bin/lpoptions', '-p', 'MyPrinterQueue']
-proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-(lpoptOut, lpoptErr) = proc.communicate()
-
-#Note: lpoptions -p printername will never fail. If MyPrinterQueue does not exist, it 
-#will still exit 0, but just produce no output.  
-#Thanks, cups, I was having a good day until now.
-
-for option in lpoptLongOut.splitlines():
-    for myOption in printerOptions.keys():
-        optionName = option.split("/", 1)[0]
-        optionValues = option.split("/",1)[1].split(":")[1].strip().split(" ")
-        for opt in optionValues:
-            if "*" in opt:
-                actualOptionValue = opt.replace('*', '')
-                break
-        if optionName == myOption:
-            if not printerOptions[myOption].lower() == actualOptionValue.lower():
-                print "Found mismatch: %s is '%s', should be '%s'" % (myOption, printerOptions[myOption], actualOptionValue)
-                sys.exit(0)
-
-optionDict = {}                
-for builtOption in shlex.split(lpoptOut):
-    try:
-        optionDict[builtOption.split("=")[0]] = builtOption.split("=")[1]
-    except:
-        optionDict[builtOption.split("=")[0]] = None
-    
-comparisonDict = { "device-uri":"lpd://10.0.0.1", "printer-info":"My Printer Queue", "printer-location":"Tech Office" }
-for keyName in comparisonDict.keys():
-    if not comparisonDict[keyName] == optionDict[keyName]:
-        print "Settings mismatch: %s is '%s', should be '%s'" % (keyName, optionDict[keyName], comparisonDict[keyName])
-        sys.exit(0)
-
-sys.exit(1)</string>
-	<key>installer_type</key>
-	<string>nopkg</string>
-	<key>minimum_os_version</key>
-	<string>10.7.0</string>
-	<key>name</key>
-	<string>AddPrinter_MyPrinterQueue</string>
-	<key>postinstall_script</key>
-	<string>#!/usr/bin/python
-import subprocess
-import sys
-
-# Populate these options if you want to set specific options for the printer. E.g. duplexing installed, etc.
-printerOptions = { "HPOptionDuplexer":"True", "OutputMode":"normal" }
-
-cmd = [ '/usr/sbin/lpadmin', '-x', 'MyPrinterQueue' ]
-proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-(lpadminxOut, lpadminxErr) = proc.communicate()
-
-# Install the printer
-cmd = [ '/usr/sbin/lpadmin',
-        '-p', 'MyPrinterQueue',
-        '-L', 'Tech Office',
-        '-D', 'My Printer Queue',
-        '-v', 'lpd://10.0.0.1',
-        '-P', "/Library/Printers/PPDs/Contents/Resources/HP officejet 5500 series.ppd.gz",
-        '-E',
-        '-o', 'printer-is-shared=false',
-        '-o', 'printer-error-policy=abort-job' ]
-
-for option in printerOptions.keys():
-    cmd.append("-o")
-    cmd.append(str(option) + "=" +  str(printerOptions[option]))
-
-proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-(lpadminOut, lpadminErr) = proc.communicate()
-
-if lpadminErr:
-    print "Error: %s" % lpadminErr
-    sys.exit(1)
-print "Results: %s" % lpadminOut    
-sys.exit(0)</string>
-	<key>requires</key>
-	<array>
-		<string>CanonPrinterDriver</string>
-	</array>
-	<key>unattended_install</key>
-	<true/>
-	<key>uninstall_method</key>
-	<string>uninstall_script</string>
-	<key>uninstall_script</key>
-	<string>#!/bin/bash
-/usr/sbin/lpadmin -x MyPrinterQueue</string>
-	<key>uninstallable</key>
-	<true/>
-	<key>version</key>
-	<string>1.5</string>
-</dict>
-</plist>
-```
