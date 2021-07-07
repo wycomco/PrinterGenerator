@@ -357,4 +357,5 @@ else:
         catalogs=catalogs,
         subdirectory=subdirectory,
         munki_name=munki_name)
-    
+
+exit(0)
