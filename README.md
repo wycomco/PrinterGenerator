@@ -65,7 +65,7 @@ The CSV file's columns should be pretty self-explanatory:
 * Subdirectory: Subdirectory inside Munki's pkgsinfo directory, only used if `--repo` is defined.
 * Munki Name: A specific name for this pkgsinfo item. This defaults to `AddPrinter_Printer Name`
 
-### Command-line options:
+### Command-line options
 
 A full description of usage is available with:
 
