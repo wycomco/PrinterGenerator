@@ -103,13 +103,13 @@ def throwError(message='Unknown error',exitcode=1,show_usage=True):
 
     sys.exit(exitcode)
 
-manifestPath = ''
+pkgsinfoPath = ''
 
 if args.repo:
     args.repo = os.path.realpath(os.path.expanduser(args.repo))
-    manifestPath = os.path.realpath(args.repo + '/manifests')
-    if not os.access(manifestPath, os.W_OK):
-        throwError('The manifest directory in given munki repo is not writable.')
+    pkgsinfoPath = os.path.realpath(args.repo + '/pkgsinfo')
+    if not os.access(pkgsinfoPath, os.W_OK):
+        throwError('The pkgsinfo directory in given munki repo is not writable.')
         
 pwd = os.path.dirname(os.path.realpath(__file__))
 f = open(os.path.join(pwd, 'AddPrinter-Template.plist'), 'rb')
@@ -207,12 +207,12 @@ def createPlist(
     # Write out the file
     newFileName = newPlist['name'] + "-" + newPlist['version'] + pref('pkginfo_extension', default='.pkginfo')
 
-    if manifestPath:
+    if pkgsinfoPath:
         if subdirectory:
-            os.makedirs(manifestPath + os.path.sep + subdirectory, exist_ok=True)
-            newFileName = os.path.realpath(manifestPath + os.path.sep + subdirectory + os.path.sep + newFileName)
+            os.makedirs(pkgsinfoPath + os.path.sep + subdirectory, exist_ok=True)
+            newFileName = os.path.realpath(pkgsinfoPath + os.path.sep + subdirectory + os.path.sep + newFileName)
         else:
-            newFileName = os.path.realpath(manifestPath + os.path.sep + newFileName)
+            newFileName = os.path.realpath(pkgsinfoPath + os.path.sep + newFileName)
     
     print('Write pkginfo file to %s' % newFileName)
 
