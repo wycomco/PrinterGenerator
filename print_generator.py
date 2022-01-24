@@ -354,6 +354,7 @@ else:
         description=description,
         options=options,
         version=version,
+        requires=requires,
         icon=icon,
         catalogs=catalogs,
         subdirectory=subdirectory,
