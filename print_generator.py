@@ -268,6 +268,7 @@ if args.csv:
                 description=row['Description'],
                 options=row['Options'],
                 version=row['Version'],
+                requires=row['Requires'],
                 icon=row['Icon'],
                 catalogs=row['Catalogs'],
                 subdirectory=row['Subdirectory'],
