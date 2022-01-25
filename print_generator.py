@@ -166,17 +166,13 @@ def createPlist(
     if driver.startswith('/Library'):
         # Assume the user passed in a full path rather than a relative filename
         driver_path = driver
-        base_driver = os.path.splitext(os.path.basename(driver))[0].replace('"', '')
     else:
         # Assume only a relative filename
         driver_path = '/Library/Printers/PPDs/Contents/Resources/%s' % driver
-        base_driver = driver
 
-    if base_driver.endswith('.ppd.gz'):
-        driver_path = driver_path.replace('.ppd.gz', '')
-    if base_driver.endswith('.gz'):
+    if driver_path.endswith('.gz'):
         driver_path = driver_path.replace('.gz', '')
-    if base_driver.endswith('.ppd'):
+    if driver_path.endswith('.ppd'):
         driver_path = driver_path.replace('.ppd', '')
 
     # Now change the variables in the installcheck_script
