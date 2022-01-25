@@ -173,9 +173,9 @@ def createPlist(
         base_driver = driver
 
     if base_driver.endswith('.gz'):
-        base_driver = base_driver.replace('.gz', '')
+        driver_path = driver_path.replace('.gz', '')
     if base_driver.endswith('.ppd'):
-        base_driver = base_driver.replace('.ppd', '')
+        driver_path = driver_path.replace('.ppd', '')
 
     # Now change the variables in the installcheck_script
     newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("PRINTERNAME", printer_name)
@@ -183,15 +183,15 @@ def createPlist(
     newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("LOCATION", location.replace('"', ''))
     newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("DISPLAY_NAME", display_name.replace('"', ''))
     newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("ADDRESS", address)
-    newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("DRIVER", base_driver)
+    newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("DRIVER", driver_path)
 
     # Now change the variables in the postinstall_script
     newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("PRINTERNAME", printer_name)
+    newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("OPTIONS", theOptionString)
     newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("LOCATION", location.replace('"', ''))
     newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("DISPLAY_NAME", display_name.replace('"', ''))
     newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("ADDRESS", address)
-    newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("DRIVER", base_driver)
-    newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("OPTIONS", theOptionString)
+    newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("DRIVER", driver_path)
 
     # Now change the one variable in the uninstall_script
     newPlist['uninstall_script'] = newPlist['uninstall_script'].replace("PRINTERNAME", printer_name)
