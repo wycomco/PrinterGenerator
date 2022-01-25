@@ -170,11 +170,6 @@ def createPlist(
         # Assume only a relative filename
         driver_path = '/Library/Printers/PPDs/Contents/Resources/%s' % driver
 
-    if driver_path.endswith('.gz'):
-        driver_path = driver_path.replace('.gz', '')
-    if driver_path.endswith('.ppd'):
-        driver_path = driver_path.replace('.ppd', '')
-
     # Now change the variables in the installcheck_script
     newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("PRINTERNAME", printer_name)
     newPlist['installcheck_script'] = newPlist['installcheck_script'].replace("OPTIONS", theOptionString)
