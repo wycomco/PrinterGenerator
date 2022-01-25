@@ -190,7 +190,7 @@ def createPlist(
     newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("LOCATION", location.replace('"', ''))
     newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("DISPLAY_NAME", display_name.replace('"', ''))
     newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("ADDRESS", address)
-    newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("DRIVER", driver)
+    newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("DRIVER", base_driver)
     newPlist['postinstall_script'] = newPlist['postinstall_script'].replace("OPTIONS", theOptionString)
 
     # Now change the one variable in the uninstall_script
