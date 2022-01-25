@@ -172,6 +172,8 @@ def createPlist(
         driver_path = '/Library/Printers/PPDs/Contents/Resources/%s' % driver
         base_driver = driver
 
+    if base_driver.endswith('.ppd.gz'):
+        driver_path = driver_path.replace('.ppd.gz', '')
     if base_driver.endswith('.gz'):
         driver_path = driver_path.replace('.gz', '')
     if base_driver.endswith('.ppd'):
