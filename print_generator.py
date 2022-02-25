@@ -79,19 +79,19 @@ def getOptionsString(optionList):
 
 parser = argparse.ArgumentParser(description='Generate a Munki nopkg-style pkginfo for printer installation.')
 parser.add_argument('--printername', help='Name of printer queue. May not contain spaces, tabs, # or /. Required.')
-parser.add_argument('--driver', help='Name of driver file in /Library/Printers/PPDs/Contents/Resources/. Can be relative or full path. Required.')
+parser.add_argument('--driver', help='Either the name of driver file in /Library/Printers/PPDs/Contents/Resources/ (relative or full path) or \'airprint-ppd\' for AirPrint printers. Required.')
 parser.add_argument('--address', help='IP or DNS address of printer. If no protocol is specified, defaults to lpd://. Required.')
 parser.add_argument('--location', help='Location name for printer. Optional. Defaults to printername.')
 parser.add_argument('--displayname', help='Display name for printer (and Munki pkginfo). Optional. Defaults to printername.')
 parser.add_argument('--desc', help='Description for Munki pkginfo only. Optional.')
-parser.add_argument('--requires', help='Required packages in form of space-delimited \'CanonDriver1 CanonDriver2\'. Optional.')
+parser.add_argument('--requires', help='Required packages in form of space-delimited \'CanonDriver1 CanonDriver2\'. Be sure to add a reference to airprint-ppd to setup your printer via AirPrint. Optional.')
 parser.add_argument('--options', nargs='*', dest='options', help='Printer options in form of space-delimited \'Option1=Key Option2=Key Option3=Key\', etc. Optional.')
 parser.add_argument('--version', help='Version number of Munki pkginfo. Optional. Defaults to 1.0.', default='1.0')
 parser.add_argument('--icon', help='Specifies an existing icon in the Munki repo to display for the printer in Managed Software Center. Optional.')
 parser.add_argument('--catalogs', help='Space delimited list of Munki catalogs. Defaults to \'testing\'. Optional.')
 parser.add_argument('--munkiname', help='Name of Munki item. Defaults to printername. Optional.')
-parser.add_argument('--repo', help='Path to Munki repo. If specified, we will try to write directly to its containing pkgsinfo directory. If not defined, we will write to current working directory. Optional.')
 parser.add_argument('--subdirectory', help='Subdirectory of Munki\'s pkgsinfo directory. Optional.')
+parser.add_argument('--repo', help='Path to Munki repo. If specified, we will try to write directly to its containing pkgsinfo directory. If not defined, we will write to current working directory. Optional.')
 parser.add_argument('--csv', help='Path to CSV file containing printer info. If CSV is provided, all other options besides \'--repo\' are ignored.')
 args = parser.parse_args()
 
@@ -163,6 +163,14 @@ def createPlist(
         # Assume the user wants to use the default, lpd://
         address = 'lpd://' + address
 
+    if driver == 'airprint-ppd':
+        # This printer should use airprint-ppd so retrieve a PPD on the fly
+        newPlist['preinstall_script'] = newPlist['preinstall_script'].replace("PRINTERNAME", printer_name)
+        newPlist['preinstall_script'] = newPlist['preinstall_script'].replace("ADDRESS", address)
+        driver = '/Library/Printers/PPDs/Contents/Resources/%s.ppd' % printer_name
+    else:
+        newPlist.pop('preinstall_script', None)
+        
     if driver.startswith('/Library'):
         # Assume the user passed in a full path rather than a relative filename
         driver_path = driver

@@ -55,11 +55,11 @@ The CSV file's columns should be pretty self-explanatory:
 * Location: The "location" of the printer as displayed in System Preferences
 * Display name: The visual name that shows up in the Printers & Scanners pane of the System Preferences, and in the print dialogue boxes. Also used in the Munki pkginfo.
 * Address: The IP or DNS address of the printer. If no protocol is specified, we expect `lpd://`
-* Driver: Name of the driver file in /Library/Printers/PPDs/Contents/Resources/ or an absolute path to a ppd file.
+* Driver: Name of the driver file in `/Library/Printers/PPDs/Contents/Resources/`, an absolute path to a ppd file or `airprint-ppd` for generic [AirPrint printers](https://support.apple.com/en-us/HT201311) (requires [airprint-ppd](https://github.com/wycomco/airprint-ppd))
 * Description: Used only in the Munki pkginfo.
 * Options: Any printer options that should be specified. These **must** be space-delimited key=value pairs, such as "HPOptionDuplexer=True OutputMode=normal".  **Do not use commas to separate the options.**
 * Version: Used only in the Munki pkginfo, defaults to `1.0`
-* Requires: Required packages for Munki pkginfo. These **must** be space-delimited, such as "CanonDriver1 CanonDriver2".
+* Requires: Required packages for Munki pkginfo. These **must** be space-delimited, such as "CanonDriver1 CanonDriver2". Be sure to add a reference to airprint-ppd to setup your printer via AirPrint.
 * Icon: Optionally specify an existing icon in the Munki repo to display for the printer in Managed Software Center.
 * Catalogs: Space separated list of Munki catalogs in which this pkginfo should be listed
 * Subdirectory: Subdirectory inside Munki's pkgsinfo directory, only used if `--repo` is defined.

@@ -79,7 +79,33 @@ sys.exit(1)
 	<string>10.7.0</string>
 	<key>name</key>
 	<string>AddPrinter_DISPLAYNAME</string>
-	<key>postinstall_script</key>
+	<key>preinstall_script</key>
+    <string>#!/usr/local/munki/munki-python
+import subprocess
+import sys
+
+# Install the printer
+cmd = [ '/usr/local/wycomco/airprint-ppd/airprint-ppd.zsh',
+        '-p', 'ADDRESS',
+        '-n', 'PRINTERNAME' ]
+
+proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+(airprintPpdOut, airprintPpdErr) = proc.communicate()
+
+if airprintPpdErr:
+    print("Error: %s" % airprintPpdErr)
+
+print("Results: %s" % airprintPpdOut)
+
+print("Return Code: %s" % proc.returncode)
+
+if proc.returncode != None:
+    sys.exit(proc.returncode)
+else:
+    print("Error: airprint-ppd exit code not recognized.")
+    sys.exit(543)
+</string>
+    <key>postinstall_script</key>
 	<string>#!/usr/local/munki/munki-python
 import subprocess
 import sys
