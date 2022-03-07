@@ -1,3 +1,3 @@
-Printer Name;Location;Display Name;Address;Driver;Description;Options;Version;Requires;Icon;Catalogs;Subdirectory;Munki Name
-MyPrinterQueue;Tech Office;My Printer Queue;10.0.0.1;HP officejet 5500 series.ppd.gz;Black and white printer in Tech Office;HPOptionDuplexer=True OutputMode=normal;5.0;HPPrinterDriver;HP LaserJet 4250.icns;testing;scripts/printers/hp/;PrinterSetup_Office
-BrotherPrinter;Home Office;Printer at home;ipp://brother9022.local;airprint-ppd;A simple AirPrint printer at home;;1.0;airprint_ppd;;testing;scripts/printers/brother/;PrinterSetup_Brother
+Printer Name,Location,Display Name,Address,Driver,Description,Options,Version,Requires,Icon,Catalogs,Subdirectory,Munki Name
+MyPrinterQueue,Tech Office,My Printer Queue,10.0.0.1,HP officejet 5500 series.ppd.gz,Black and white printer in Tech Office,HPOptionDuplexer=True OutputMode=normal,5.0,HPPrinterDriver,HP LaserJet 4250.icns,testing,scripts/printers/hp/,PrinterSetup_Office
+BrotherPrinter,Home Office,Printer at home,ipp://brother9022.local,airprint-ppd,A simple AirPrint printer at home,,1.0,airprint_ppd,,testing,scripts/printers/brother/,PrinterSetup_Brother

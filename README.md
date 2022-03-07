@@ -12,13 +12,13 @@ This updated version implements some cool new things:
 
 * Support for macOS 10.14, 10.15, 11 and 12
 * Usage of the Munki-included Python3
-* Enables usage of Microsoft Excel to edit the CSV file – **this required switching the separator from comma to semicolon**, you may need to update your files accordingly
+* Enhances usage of Microsoft Excel to edit the CSV file: for regions which use the comma as the decimal separator, Microsoft Excel expects a semicolon as separator in CSV files. The script will distinguish between both variants.
 * The order of the csv columns do not have to be preserved, but **keep the names of the 1st row**.
 * Sanity checks for the csv fields
 * Option to setup printers using AirPrint provided PPDs, using [airprint-ppd](https://github.com/wycomco/airprint-ppd)
 * Option to define a path to Munki repo and an optional subdirectory
 * Option to define a separate name for the Munki pkginfo item
-* Besides switching to semicolons as csv separator: **This script should preserve backward compatibility!**
+* **This script should preserve backward compatibility!**
 
 ## Caveats
 

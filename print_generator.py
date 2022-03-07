@@ -14,7 +14,7 @@ from plistlib import load as load_plist  # Python 3
 from plistlib import dump as dump_plist
 
 
-# Preference hanlding copied from Munki:
+# Preference handling copied from Munki:
 # https://github.com/munki/munki/blob/e8ccc5f53e8f69b59fbc153a783158a34ca6d1ea/code/client/munkilib/cliutils.py#L55
 
 BUNDLE_ID = 'com.googlecode.munki.munkiimport'
@@ -115,6 +115,13 @@ pwd = os.path.dirname(os.path.realpath(__file__))
 f = open(os.path.join(pwd, 'AddPrinter-Template.plist'), 'rb')
 templatePlist = load_plist(f)
 f.close()
+
+# Identify the delimiter of a given CSV file, props to https://stackoverflow.com/questions/69817054/python-detection-of-delimiter-separator-in-a-csv-file
+def find_delimiter(filename):
+    sniffer = csv.Sniffer()
+    with open(filename) as fp:
+        delimiter = sniffer.sniff(fp.read(5000)).delimiter
+    return delimiter
 
 def createPlist(
     printer_name: str,
@@ -225,7 +232,7 @@ def createPlist(
 if args.csv:
     # A CSV was found, use that for all data.
     with open(args.csv, mode='r') as infile:
-        reader = csv.DictReader(infile, delimiter=';')
+        reader = csv.DictReader(infile, delimiter=find_delimiter(args.csv))
 
         for row in reader:
             
