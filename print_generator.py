@@ -35,7 +35,7 @@ except ImportError:
 if FOUNDATION_SUPPORT:
     def pref(prefname, default=None):
         """Return a preference. Since this uses CFPreferencesCopyAppValue,
-        Preferences can be defined several places. Precedence is:
+        Preferences can be defined in several places. Precedence is:
             - MCX/Configuration Profile
             - ~/Library/Preferences/ByHost/
                 com.googlecode.munki.munkiimport.XX.plist
@@ -84,6 +84,7 @@ parser.add_argument('--address', help='IP or DNS address of printer. If no proto
 parser.add_argument('--location', help='Location name for printer. Optional. Defaults to printername.')
 parser.add_argument('--displayname', help='Display name for printer (and Munki pkginfo). Optional. Defaults to printername.')
 parser.add_argument('--desc', help='Description for Munki pkginfo only. Optional.')
+parser.add_argument('--category', help='Category for Munki pgkinfo only. Optional. Defaults to \'Printers\'.')
 parser.add_argument('--requires', help='Required packages in form of space-delimited \'CanonDriver1 CanonDriver2\'. Be sure to add a reference to airprint-ppd to setup your printer via AirPrint. Optional.')
 parser.add_argument('--options', nargs='*', dest='options', help='Printer options in form of space-delimited \'Option1=Key Option2=Key Option3=Key\', etc. Optional.')
 parser.add_argument('--version', help='Version number of Munki pkginfo. Optional. Defaults to 1.0.', default='1.0')
@@ -130,6 +131,7 @@ def createPlist(
     display_name: Optional[str] = '',
     location: Optional[str] = '',
     description: Optional[str] = '',
+    category: Optional[str] = 'Printers',
     options: Optional[str] = '',
     version: Optional[str] = '1.0',
     requires: Optional[str] = '',
@@ -149,6 +151,7 @@ def createPlist(
     # First, change the plist keys in the pkginfo itself
     newPlist['display_name'] = display_name
     newPlist['description'] = description
+    newPlist['category'] = category
 
     if munki_name:
         newPlist['name'] = munki_name
@@ -222,7 +225,7 @@ def createPlist(
         else:
             newFileName = os.path.realpath(pkgsinfoPath + os.path.sep + newFileName)
     
-    print('Write pkginfo file to %s' % newFileName)
+    print('Wrote pkginfo file to %s' % newFileName)
 
     f = open(newFileName, 'wb')
     dump_plist(newPlist, f)
@@ -252,6 +255,8 @@ if args.csv:
                 throwError('Driver is required')
             if 'Description' not in row:
                 row['Description'] = ''
+            if 'Category' not in row:
+                row['Category'] = 'Printers'
             if 'Options' not in row:
                 row['Options'] = ''
             if 'Version' not in row:
@@ -279,6 +284,7 @@ if args.csv:
                 requires=row['Requires'],
                 icon=row['Icon'],
                 catalogs=row['Catalogs'],
+                category=row['Category'],
                 subdirectory=row['Subdirectory'],
                 munki_name=row['Munki Name'])
 
@@ -307,6 +313,11 @@ else:
         description = args.desc
     else:
         description = ""
+
+    if args.category:
+        description = args.category
+    else:
+        category = "Printers"
 
     if args.displayname:
         display_name = args.displayname
@@ -360,6 +371,7 @@ else:
         display_name=display_name,
         location=location,
         description=description,
+        category=category,
         options=options,
         version=version,
         requires=requires,
