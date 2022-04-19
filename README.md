@@ -18,6 +18,7 @@ This updated version implements some cool new things:
 * Option to setup printers using AirPrint provided PPDs, using [airprint-ppd](https://github.com/wycomco/airprint-ppd)
 * Option to define a path to Munki repo and an optional subdirectory
 * Option to define a separate name for the Munki pkginfo item
+* Option to define a Munki category
 * **This script should preserve backward compatibility!**
 
 ## Caveats
@@ -67,6 +68,7 @@ The CSV file's columns should be pretty self-explanatory:
 * Requires: Required packages for Munki pkginfo. These **must** be space-delimited, such as "CanonDriver1 CanonDriver2". Be sure to add a reference to airprint-ppd to setup your printer via AirPrint.
 * Icon: Optionally specify an existing icon in the Munki repo to display for the printer in Managed Software Center.
 * Catalogs: Space separated list of Munki catalogs in which this pkginfo should be listed
+* Category: Populates the Munki category, defaults to `Printers`
 * Subdirectory: Subdirectory inside Munki's pkgsinfo directory, only used if `--repo` is defined.
 * Munki Name: A specific name for this pkgsinfo item. This defaults to `AddPrinter_Printer Name`
 
@@ -76,7 +78,7 @@ A full description of usage is available with:
 
 ```
 ./print_generator.py -h
-usage: print_generator.py [-h] [--printername PRINTERNAME] [--driver DRIVER] [--address ADDRESS] [--location LOCATION] [--displayname DISPLAYNAME] [--desc DESC] [--requires REQUIRES] [--options [OPTIONS ...]] [--version VERSION] [--icon ICON] [--catalogs CATALOGS] [--munkiname MUNKINAME] [--repo REPO] [--subdirectory SUBDIRECTORY] [--csv CSV]
+usage: print_generator.py [-h] [--printername PRINTERNAME] [--driver DRIVER] [--address ADDRESS] [--location LOCATION] [--displayname DISPLAYNAME] [--desc DESC] [--requires REQUIRES] [--options [OPTIONS ...]] [--version VERSION] [--icon ICON] [--catalogs CATALOGS] [--category CATEGORY] [--munkiname MUNKINAME] [--repo REPO] [--subdirectory SUBDIRECTORY] [--csv CSV]
 
 Generate a Munki nopkg-style pkginfo for printer installation.
 
@@ -98,6 +100,7 @@ optional arguments:
   --version VERSION     Version number of Munki pkginfo. Optional. Defaults to 1.0.
   --icon ICON           Specifies an existing icon in the Munki repo to display for the printer in Managed Software Center. Optional.
   --catalogs CATALOGS   Space delimited list of Munki catalogs. Defaults to 'testing'. Optional.
+  --category CATEGORY   Category for Munki pkginfo only. Optional. Defaults to 'Printers'.
   --munkiname MUNKINAME
                         Name of Munki item. Defaults to printername. Optional.
   --subdirectory SUBDIRECTORY
@@ -119,6 +122,7 @@ As in the above CSV section, the arguments are all the same:
 * `--version`: The version number of the Munki pkginfo. Defaults to "1.0".
 * `--icon`: Used only in the Munki pkginfo. If not provided, will default to an empty string ("").
 * `--catalogs`: Space delimited list of Munki catalogs. Defaults to 'testing'. Optional.
+* `--category`: Name of the Munki category. Defaults to 'Printers'. Optional.
 * `--munkiname`: Name of Munki item. Defaults to printername. Optional.
 * `--subdirectory`: Subdirectory of Munki's pkgsinfo directory. Optional.
 * `--repo`: Path to Munki repo. If specified, we will try to write directly to its containing pkgsinfo directory. If not defined, we will write to current working directory. Optional.
