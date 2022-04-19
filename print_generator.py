@@ -45,7 +45,7 @@ if FOUNDATION_SUPPORT:
         value = CFPreferencesCopyAppValue(prefname, BUNDLE_ID)
         if value is None:
             return default
-        
+
         return value
 
 else:
@@ -111,7 +111,7 @@ if args.repo:
     pkgsinfoPath = os.path.realpath(args.repo + '/pkgsinfo')
     if not os.access(pkgsinfoPath, os.W_OK):
         throwError('The pkgsinfo directory in given munki repo is not writable.')
-        
+
 pwd = os.path.dirname(os.path.realpath(__file__))
 f = open(os.path.join(pwd, 'AddPrinter-Template.plist'), 'rb')
 templatePlist = load_plist(f)
@@ -180,7 +180,7 @@ def createPlist(
         driver = '/Library/Printers/PPDs/Contents/Resources/%s.ppd' % printer_name
     else:
         newPlist.pop('preinstall_script', None)
-        
+
     if driver.startswith('/Library'):
         # Assume the user passed in a full path rather than a relative filename
         driver_path = driver
@@ -224,8 +224,8 @@ def createPlist(
             newFileName = os.path.realpath(pkgsinfoPath + os.path.sep + subdirectory + os.path.sep + newFileName)
         else:
             newFileName = os.path.realpath(pkgsinfoPath + os.path.sep + newFileName)
-    
-    print('Wrote pkginfo file to %s' % newFileName)
+
+    print('Writing pkginfo file to %s' % newFileName)
 
     f = open(newFileName, 'wb')
     dump_plist(newPlist, f)
@@ -238,7 +238,6 @@ if args.csv:
         reader = csv.DictReader(infile, delimiter=find_delimiter(args.csv))
 
         for row in reader:
-            
             # In earlier versions, each row contains up to 10 elements:
             # Printer Name, Location, Display Name, Address, Driver, Description, Options, Version, Requires, Icon
             # To preserve backward compatibility, define all possible elements with default values and check for
@@ -288,7 +287,6 @@ if args.csv:
                 subdirectory=row['Subdirectory'],
                 munki_name=row['Munki Name'])
 
-            
 else:
     if not args.printername:
         throwError('Argument --printername is required')
@@ -348,7 +346,7 @@ else:
         options = args.options
     else:
         options = ''
-    
+
     if args.catalogs:
         catalogs = args.catalogs
     else:
