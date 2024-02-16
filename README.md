@@ -10,7 +10,7 @@ This is a fork of [nmcspadden/PrinterGenerator](https://github.com/nmcspadden/Pr
 
 This updated version implements some cool new things:
 
-* Support for macOS 10.14, 10.15, 11 and 12
+* Support for macOS 10.14, 10.15, 11, 12, 13 and 14
 * Usage of the Munki-included Python3
 * Enhances usage of Microsoft Excel to edit the CSV file: for regions which use the comma as the decimal separator, Microsoft Excel expects a semicolon as separator in CSV files. The script will distinguish between both variants.
 * The order of the csv columns do not have to be preserved, but **keep the names of the 1st row**.
