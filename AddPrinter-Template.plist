@@ -147,6 +147,8 @@ sys.exit(0)
 </string>
 	<key>unattended_install</key>
 	<true/>
+	<key>unattended_uninstall</key>
+	<true/>
 	<key>uninstall_method</key>
 	<string>uninstall_script</string>
 	<key>uninstall_script</key>
