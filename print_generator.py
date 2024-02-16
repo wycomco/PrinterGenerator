@@ -313,7 +313,7 @@ else:
         description = ""
 
     if args.category:
-        description = args.category
+        category = args.category
     else:
         category = "Printers"
 

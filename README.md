@@ -127,6 +127,10 @@ As in the above CSV section, the arguments are all the same:
 * `--subdirectory`: Subdirectory of Munki's pkgsinfo directory. Optional.
 * `--repo`: Path to Munki repo. If specified, we will try to write directly to its containing pkgsinfo directory. If not defined, we will write to current working directory. Optional.
 
+### Figuring out required PPD
+
+When having defined the printer in macOS, look for the name of the printer driver and note the model part of it, like "C5030". To find the path to the PPD file, enter `lpinfo -m | grep -i "C5030"`in terminal and inspect the file names.
+
 ### Figuring out options
 
 Printer options can be determined by using `lpoptions` on an existing printer queue:  
