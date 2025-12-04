@@ -13,7 +13,7 @@
 	<key>display_name</key>
 	<string>DISPLAY_NAME</string>
 	<key>installcheck_script</key>
-	<string>#!/usr/local/munki/munki-python
+	<string>#!/usr/local/bin/managed_python3
 import subprocess
 import sys
 import shlex
@@ -80,7 +80,7 @@ sys.exit(1)
 	<key>name</key>
 	<string>AddPrinter_DISPLAYNAME</string>
 	<key>preinstall_script</key>
-    <string>#!/usr/local/munki/munki-python
+    <string>#!/usr/local/bin/managed_python3
 import subprocess
 import sys
 
@@ -106,7 +106,7 @@ else:
     sys.exit(543)
 </string>
     <key>postinstall_script</key>
-	<string>#!/usr/local/munki/munki-python
+	<string>#!/usr/local/bin/managed_python3
 import subprocess
 import sys
 
