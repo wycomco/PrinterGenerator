@@ -1,4 +1,4 @@
-#!/usr/local/munki/munki-python
+#!/usr/local/bin/managed_python3
 from __future__ import absolute_import, print_function
 
 import argparse
